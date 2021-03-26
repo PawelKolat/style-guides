@@ -5,4 +5,79 @@ extends:
   - ./apisyouwonthate.yml
   - ./openapi.yml
 
-rules: {}
+rules:
+  #start schema
+  1my-oas3-api-email-schema-must-have-format-exclude-special-models:
+    description: "Components Schema Format issue - this property should have format type. E.g. if your string represents email it should have format email. Special models like EmailBody, EmailHeader, EmailRequest, EmailTemplate are exempt. You can add exempt words if you need to"
+    message: "{{property}} 1 Schema format issue - this property should have format type. E.g. if your string represents email it should have format email"
+    severity: error
+    formats: ["oas3"]
+    given: $.components[schemas][?(
+      @property.toLowerCase().includes('email')&&
+      ((@property.toLowerCase() != 'emailheader'))&&
+      ((@property.toLowerCase() != 'emailrequest'))&&
+      ((@property.toLowerCase() != 'emailbody'))&&
+      ((@property.toLowerCase() != 'emailtemplate'))
+      )] 
+    then:
+      field: format
+      function: truthy
+
+  2my-oas3-api-email-schema-must-have-email-format:
+    description: "email must be of email format - schema"
+    message: " 2 This property should be of email format"
+    formats: ["oas3"]
+    given: "$.components[schemas][?(
+      @property.toLowerCase().includes('email')&&
+      ((@property.toLowerCase() != 'emailheader'))&&
+      ((@property.toLowerCase() != 'emailrequest'))&&
+      ((@property.toLowerCase() != 'emailbody'))&&
+      ((@property.toLowerCase() != 'emailtemplate'))
+      )].format"
+    then:
+      function: pattern
+      functionOptions:
+        match: 'email'
+ #start parameters
+  3my-oas3-api-email-parameters-must-have-format-exclude-special-models:
+    description: "Components Parameters Format issue - this property should have format type. E.g. if your string represents email it should have format email. Special models like EmailBody, EmailHeader, EmailRequest, EmailTemplate are exempt. You can add exempt words if you need to"
+    message: "{{property}} 3 Parameters format issue - this property should have format type. E.g. if your string represents email it should have format email"
+    severity: error
+    formats: ["oas3"]
+    given: "$.components[parameters][?(
+      @property.toLowerCase().includes('email')&&
+      ((@property.toLowerCase() != 'emailheader'))&&
+      ((@property.toLowerCase() != 'emailrequest'))&&
+      ((@property.toLowerCase() != 'emailbody'))&&
+      ((@property.toLowerCase() != 'emailtemplate'))
+      )][schema]"
+    then:
+      field: format
+      function: truthy
+
+  # 5my-oas3-reference-only: 
+  #   description: "No type declarations in path - we must reference all objects. All objects should be by reference only."
+  #   message: "{{property}}5 No type declarations - you must reference all objects"
+  #   severity: error
+  #   formats: ["oas3"]
+  #   given: "$.paths.[*].schema"
+  #   then:
+  #     field: type
+  #     function: truthy
+  
+
+  4my-oas3-api-email-parameters-must-have-email-format:
+    description: "email must be of email format - parameters"
+    message: "4 This property should be of email format"
+    formats: ["oas3"]
+    given: "$.components[parameters][?(
+      @property.toLowerCase().includes('email')&&
+      ((@property.toLowerCase() != 'emailheader'))&&
+      ((@property.toLowerCase() != 'emailrequest'))&&
+      ((@property.toLowerCase() != 'emailbody'))&&
+      ((@property.toLowerCase() != 'emailtemplate'))
+      )][schema].format"
+    then:
+      function: pattern
+      functionOptions:
+        match: 'email'
