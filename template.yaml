@@ -1,0 +1,491 @@
+openapi: 3.0.0
+info:
+  title: API Name
+  description: This template will be used to create draft or initial base versions of new GET/POST API which can be further customised as per service requirements.
+  version: 0.0.1
+  contact:
+    name: design team
+    email: example@gmail.com
+tags:
+  - name: Template Get
+  - name: Template Post
+  - name: Email
+servers:
+  - url: 'https://dev.systems.private/uk/msa/apilayer/v1/apiname'
+security:
+  - bearerAuth: []
+paths:
+  /email:
+    post:
+      tags:
+        - Email
+      description: send simple email
+      operationId: email
+      summary: |
+        This services sends email to one or more email addresses routed via the email management platform. Further email communications can be tracked via the mail box. 
+      parameters:
+        - $ref: '#/components/parameters/MWH-RequestID'
+        - $ref: '#/components/parameters/MWH-RequestTimestamp'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailRequest'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContentResponse'
+        '400':
+          $ref: '#/components/responses/BusinessFailureResponse'
+        '500':
+          $ref: '#/components/responses/SystemFailureResponse'
+  /resourcename:
+    get:
+      tags:
+        - Template Get
+      description: Sample template for GET operation.
+      operationId: GetOperationNameInUpperCamelCase
+      parameters:
+        - $ref: '#/components/parameters/MWH-RequestID'
+        - $ref: '#/components/parameters/MWH-RequestTimestamp'
+        - $ref: '#/components/parameters/ContactEmail'
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccesfulGetResponse'
+        '204':
+          $ref: '#/components/responses/NoContentResponse'
+        '400':
+          $ref: '#/components/responses/BusinessFailureResponse'
+        '500':
+          $ref: '#/components/responses/SystemFailureResponse'
+    post:
+      tags:
+        - Template Post
+      description: Sample template for POST operation.
+      operationId: PostOperationNameInUpperCamelCase
+      parameters:
+        - $ref: '#/components/parameters/MWH-RequestID'
+        - $ref: '#/components/parameters/MWH-RequestTimestamp'
+      requestBody:
+        description: The request Body
+        content:
+          application/json:
+            #avoid
+            # schema:
+            #     type: object
+            #     properties:
+            #       EmailAddress:
+            #         type: string
+            #         format: email
+            #         description: 'This is a generic email type, which can be used for all email references like PrimaryContactEmailAddress, SecondaryContactEmailAddress and other email related fields.'
+            
+            #       Password:
+            #         description: Password field
+            #         type: string
+            #         example: Welcome1
+
+            #promote
+            schema:
+              $ref: '#/components/schemas/ValidateCredentialsRequest'
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccesfulPostResponse'
+        '400':
+          $ref: '#/components/responses/BusinessFailureResponse'
+        '500':
+          $ref: '#/components/responses/SystemFailureResponse'
+components:
+  headers:
+    MWH-ResponseTimestamp:
+      description: Used to reflect the time when the message was created within this service for the response.
+      schema:
+        type: string
+        format: date-time
+      example: '2019-12-17T09:30:57Z'
+    MWH-RequestID:
+      description: RequestID is a unique identifier that is unique for a single request/response message and will be used to map log and error message to consumer's request.
+      schema:
+        type: string
+      example: 'uuid:956aae5a-861f-11eb-8dcd-0242ac130003'
+    MWH-RequestTimestamp:
+      description: Used to reflect the time when the message was created.
+      schema:
+        type: string
+        format: date-time
+      example: '2019-12-17T09:30:47Z'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: OAUTH Token
+  responses:
+    SuccesfulGetResponse:
+      description: 'OK, consumers will get this success response when the GET operation is successful.'
+      headers:
+        MWH-RequestID:
+          $ref: '#/components/headers/MWH-RequestID'
+        MWH-RequestTimestamp:
+          $ref: '#/components/headers/MWH-RequestTimestamp'
+        MWH-ResponseTimestamp:
+          $ref: '#/components/headers/MWH-ResponseTimestamp'
+      content:
+        application/json:
+          schema:
+            required:
+              - appointments
+            properties:
+              appointments:
+                items:
+                  $ref: '#/components/schemas/FaultAppointment'
+                type: array
+                minItems: 1
+                maxItems: 100
+                description: Appointments for fault booking
+          examples:
+            BusinessFailureResponse1:
+              $ref: '#/components/examples/SampleSuccessfulResponseWithTwoAppointments'
+    SuccesfulPostResponse:
+      description: 'OK, consumers will get this success response when the POST operation is successful.'
+      headers:
+        MWH-RequestID:
+          $ref: '#/components/headers/MWH-RequestID'
+        MWH-RequestTimestamp:
+          $ref: '#/components/headers/MWH-RequestTimestamp'
+        MWH-ResponseTimestamp:
+          $ref: '#/components/headers/MWH-ResponseTimestamp'
+      content:
+        application/json:
+          schema:
+            required:
+              - appointments
+            properties:
+              appointments:
+                items:
+                  $ref: '#/components/schemas/FaultAppointment'
+                type: array
+                minItems: 1
+                maxItems: 100
+                description: Appointments for fault booking
+          examples:
+            BusinessFailureResponse1:
+              $ref: '#/components/examples/SampleSuccessfulResponseWithTwoAppointments'
+    NoContentResponse:
+      description: 'No response, success'
+      headers:
+        MWH-RequestID:
+          $ref: '#/components/headers/MWH-RequestID'
+        MWH-RequestTimestamp:
+          $ref: '#/components/headers/MWH-RequestTimestamp'
+        MWH-ResponseTimestamp:
+          $ref: '#/components/headers/MWH-ResponseTimestamp'
+    BusinessFailureResponse:
+      description: 'Bad Request, consumers will get this error if the request does not contain valid headers and inputs.'
+      headers:
+        MWH-RequestID:
+          $ref: '#/components/headers/MWH-RequestID'
+        MWH-RequestTimestamp:
+          $ref: '#/components/headers/MWH-RequestTimestamp'
+        MWH-ResponseTimestamp:
+          $ref: '#/components/headers/MWH-ResponseTimestamp'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Fault'
+          examples:
+            BusinessFailureResponse1:
+              $ref: '#/components/examples/SampleBusinessFailureResponse'
+    SystemFailureResponse:
+      description: |
+        Internal Server Error, consumers will get this error if backend systems were unavailable, unexpected errors.
+      headers:
+        MWH-RequestID:
+          $ref: '#/components/headers/MWH-RequestID'
+        MWH-RequestTimestamp:
+          $ref: '#/components/headers/MWH-RequestTimestamp'
+        MWH-ResponseTimestamp:
+          $ref: '#/components/headers/MWH-ResponseTimestamp'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Fault'
+          examples:
+            SampleSystemFailureResponse:
+              $ref: '#/components/examples/SampleSystemFailureResponse'
+  examples:
+    SampleSuccessfulResponseWithTwoAppointments:
+      value:
+        appointments:
+          - appointmentDate: '2020-01-21'
+            appointmentPriority: Standard
+          - appointmentDate: '2020-01-22'
+            appointmentPriority: Standard
+    SampleBusinessFailureResponse:
+      value:
+        code: 10-0-300000
+        description: Validation Error
+        faultDetails:
+          - name: Validation Error
+            value: Provide a valid account number
+            context: accountNumber
+        severity: ERROR
+        sourceSystem: Middleware
+        type: BUSINESS
+    SampleSystemFailureResponse:
+      value:
+        code: 10-1-200000
+        description: System Exception
+        faultDetails:
+          - name: Connection Error
+            value: DB connection error
+            context: DB
+        severity: CRITICAL
+        sourceSystem: Middleware
+        type: SYSTEM
+  parameters:
+    ContactEmail:
+      name: contactEmail
+      in: query
+      description: Email Address
+      example: example@gmail.com
+      schema:
+        $ref: '#/components/schemas/EmailAddress'
+    MWH-RequestID:
+      name: MWH-RequestID
+      in: header
+      description: RequestID is a unique identifier that is unique for a single request/response message and will be used to map log and error message to consumer's request.
+      schema:
+        type: string
+      example: 'uuid:956aae5a-861f-11eb-8dcd-0242ac130003'
+    MWH-RequestTimestamp:
+      name: MWH-RequestTimestamp
+      in: header
+      description: Used to reflect the time when the message was created.
+      schema:
+        type: string
+        format: date-time
+      example: '2019-12-17T09:30:47Z'
+   
+  schemas:
+    Fault:
+      type: object
+      description: the Fault.
+      required:
+        - code
+        - severity
+      properties:
+        code:
+          type: string
+          description: |
+            Code represents the fault code composed of three fields separated by - characters. The first field represents the country code (10 for COMMON, 11 for UK). The second field represents the severity (0 for ERROR, 1 for CRITICAL, 2 for WARNING, 3 for INFO). The third field represents the error code 100000 description Business Exception    200001 description System Exception (meaning Connection Error) 200002 description System Exception (meaning Read Timeout) 300000 description Validation Exception
+          example: 10-0-100000
+        severity:
+          type: string
+          description: 'Severity of the message info. Error severity will be either CRITICAL, ERROR, WARNING and INFORMATION'
+          example: ERROR
+        description:
+          type: string
+          description: |
+            Technical descriptions associated with errors that assist operation support team/processes but will NOT be passed back to consumer. This will be one of the values Business Exception, System Exception or Validation Exception. 
+          example: Business Exception
+        sourceSystem:
+          type: string
+          description: |
+            Source system generating the error. This will be one of the values Middleware or Backend but will NOT be passed back to consumers.
+          example: Middleware
+        faultDetails:
+          items:
+            $ref: '#/components/schemas/FaultDetails'
+          type: array
+          minItems: 0
+          maxItems: 200
+          description: Full details of the message as provided by the source System but will NOT be passed back to consumers.
+    FaultDetails:
+      type: object
+      description: the FaultDetails.
+      required:
+        - name
+        - value
+        - context
+      properties:
+        name:
+          type: string
+          description: Name of the detail provided to supplement the error.
+        value:
+          type: string
+          description: Value of the detail provided to supplement the error.
+        context:
+          type: string
+          description: Fault details
+          example: user creation
+    FaultAppointment:
+      required:
+        - appointmentDate
+      properties:
+        appointmentDate:
+          type: string
+          description: The Appointment Date represents the date for an appointment time slot.
+          example: '2020-08-23'
+        appointmentPriority:
+          type: string
+          description: Priority type of the appointment.
+          example: Standard
+    EmailAddress:
+      type: string
+      format: email
+      description: 'This is a generic email type, which can be used for all email references like PrimaryContactEmailAddress, SecondaryContactEmailAddress and other email related fields.'
+    Password:
+      description: Password field
+      type: string
+      example: Welcome1
+    ValidateCredentialsRequest:
+      type: object
+      properties:
+        contactEmail:
+          $ref: '#/components/schemas/EmailAddress'
+        password:
+          $ref: '#/components/schemas/Password'
+    
+    EmailRequest:
+      type: object
+      description: The email Request object.
+      required:
+        - emailHeader
+        - emailBody
+      properties:
+        emailHeader:
+          $ref: '#/components/schemas/emailHeader'
+        emailBody:
+          $ref: '#/components/schemas/emailBody'
+    emailHeader:
+      type: object
+      description: the email Header object.
+      properties:
+        senderEmailAddress:
+          type: string
+          #format missing
+          description: |
+            Address from which the email is sent.
+          example: abc@gmail.com
+        recipientEmailAddress:
+          type: array
+          items:
+            type: string
+            # format: email
+          minItems: 0
+          maxItems: 10
+          description: |
+            Email address to which the email is sent.
+          example:
+            - abc@gmail.com
+        ccEmailAddress:
+          type: array
+          items:
+            type: string
+            # format: email
+          minItems: 0
+          maxItems: 10
+          description: |
+            Email address to which the email is sent by copy.
+          example:
+            - abc@gmail.com
+        bccEmailAddress:
+          type: array
+          items:
+            type: string
+            format: email
+          minItems: 0
+          maxItems: 10
+          description: |
+            Email address to which the kana email is sent by secret copy.
+          example:
+            - abc@gmail.com
+        businessProcessEmailAddress:
+          type: string
+          format: email
+          description: |
+            business email address queue from which the email is sent and further email communications are managed
+          example: xyz@example.co.uk
+        subject:
+          type: string
+          description: |
+            Subject of the email
+          example: hello
+        replytoEmailAddress:
+          type: string
+          format: email
+          description: |
+            This is the email address where the reply will be directed instead of the senders email address.
+          example: abc@gmail.com
+    emailBody:
+      type: object
+      description: The emailBody object.
+      properties:
+        emailTemplate:
+          $ref: '#/components/schemas/emailTemplate'
+        bodyContent:
+          $ref: '#/components/schemas/bodyContent'
+        templateAttributes:
+          $ref: '#/components/schemas/templateAttributes'
+    emailTemplate:
+      type: object
+      required:
+        - templateID
+        - templateAttributes
+      properties:
+        templateID:
+          type: string
+          description: |
+            email template ID
+          example: TS-AN-01-ADDACS ACCOUNT CLOSED
+        templateAttributes:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/templateAttributes'
+    templateAttributes:
+      type: object
+      required:
+        - name
+        - value
+      properties:
+        name:
+          type: string
+          description: |
+            Name represents the attribute/element to be associated with value/pairing.
+          example: AccountNumber
+        value:
+          type: string
+          description: |
+            Value represents the attribute/element value to be associated with name pairing.
+          example: '1827272'
+        excludeFromXML:
+          type: boolean
+          description: |
+            Attributes are included in all content types i.e. XML, HTML and text whilst building business email requests. This directive is defined for cases where an attribute needs to be exluded from  XML content in business emails.
+          example: false
+        excludeFromHTML:
+          type: boolean
+          description: |
+            Attributes are included in all content types i.e. XML, HTML and text whilst building business email requests. This directive is defined for cases where an attribute needs to be exluded from  HTML content in business emails.
+          example: false
+        excludeFromText:
+          type: boolean
+          description: |
+            Attributes are included in all content types i.e. XML, HTML and text whilst building business email requests. This directive is defined for cases where an attribute needs to be exluded from  Text content in business emails.
+          example: true
+    bodyContent:
+      type: object
+      required:
+        - content
+        - contentType
+      properties:
+        content:
+          type: string
+          description: |
+            The content of email body. For HTML body of the email, the content should be encoded as per the XML standards. 
+          example: <html><body>hi</body></html>
+        contentType:
+          type: string
+          description: |
+            Type of content supported. Possible Values - text/plain, text/richtext and text/html
+          example: text/html
